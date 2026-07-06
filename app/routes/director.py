@@ -1,6 +1,3 @@
-import http
-import stat
-
 from fastapi import APIRouter , status , HTTPException ,Depends
 from sqlalchemy.orm import Session
 from app.schemas.directorschema import CreateDorector , ResponseDirector,UpdateDirector
