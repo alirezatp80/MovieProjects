@@ -20,3 +20,20 @@ def create_director(director:CreateDorector , db:Session=Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail='database error')
     return newdirector
+
+@app.get('/' , response_model=list[ResponseDirector])
+def get_all_directors(db:Session=Depends(get_db)):
+    try:
+        directors = db.query(Director).all()
+    except:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail='db has error!!')
+    return directors
+
+@app.get('/{director_id}' , response_model=ResponseDirector)
+def get_director(director_id:int , db:Session=Depends(get_db)):
+    db_director = db.query(Director).filter(Director.id == director_id).one_or_none()
+    if db_director is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail='cant find directors')
+    return db_director
+
+
