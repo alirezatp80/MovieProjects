@@ -10,3 +10,6 @@ class CreateDorector(BaseDirector):
 
 class ResponseDirector(BaseDirector):
     id :int
+
+class UpdateDirector(BaseDirector):
+    fullname : str |None = None
