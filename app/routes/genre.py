@@ -1,6 +1,3 @@
-import http
-import stat
-
 from fastapi import APIRouter , Depends , HTTPException , status
 from app.schemas.genreschema import CreateGenre , ResponseGenre , UpdateGenre
 from app.database import get_db
