@@ -2,12 +2,13 @@
 from operator import truediv
 
 from sqlalchemy import Column , String , Integer  , ForeignKey , Table
-from database import Base
+from app.database import Base
 from sqlalchemy.orm import relationship
 
 movie_genres = Table(
     'movie_genres',
-    Column('movie_id' , ForeignKey('movies.id') , primary_key=True), # type: ignore
+    Base.metadata,
+    Column('movie_id' , ForeignKey('movies.id') , primary_key=True),
     Column('genre_id' , ForeignKey('genres.id') , primary_key=True)
 )
 
@@ -34,8 +35,9 @@ class Movie(Base):
     description = Column(String)
 
     genre_id = Column(Integer,ForeignKey('genres.id'))
-    director = Column(Integer ,ForeignKey('directors.id'))
+    director_id = Column(Integer ,ForeignKey('directors.id'))
+    director = relationship('Director' , back_populates='movies')
 
     genre = relationship('Genre' ,secondary=movie_genres, back_populates='movies')
-    director = relationship('Director' , back_populates='movies')
+   
 

@@ -21,3 +21,6 @@ class CreateDirector(BaseDirector):
     pass
 class CreateMovie(BaseMovieSchema):
     pass
+
+class ResponseGenre(BaseGenre):
+    id:int
