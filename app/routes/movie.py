@@ -16,14 +16,24 @@ def get_by_title(query:str = Query(... , min_length=1 ) , db:Session=Depends(get
    return movies
 
 @app.get('/filter_by_genre',response_model=list[ResponseMovie])
-def get_by_genre(genre:str , db:Session=Depends(get_db)):
-   genre = db.query(Genre).filter(Genre.name == genre).first()
+def get_by_genre(genre_inp:str , db:Session=Depends(get_db)):
+   genre = db.query(Genre).filter(Genre.name == genre_inp).first()
    if genre is None:
       raise HTTPException(
          status_code=status.HTTP_404_NOT_FOUND,
          detail='not found genre'
       )
    return genre.movies
+
+@app.get('/filter_by_director',response_model=list[ResponseMovie])
+def get_by_director(director:str , db:Session=Depends(get_db)):
+   director_db = db.query(Director).filter(Director.fullname == director).first()
+   if director_db is None:
+      raise HTTPException(
+         status_code=status.HTTP_404_NOT_FOUND,
+         detail='not found Director'
+      )
+   return director_db.movies
 
 
 @app.post('/' , response_model=ResponseMovie , status_code=status.HTTP_201_CREATED)
