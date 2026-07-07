@@ -1,12 +1,33 @@
-from fastapi import APIRouter , Depends , status , HTTPException
+from fastapi import APIRouter , Depends , status , HTTPException , Query
 from sqlalchemy.orm import Session 
 from app.models.movie import Movie , Genre , Director
-from app.schemas.movieschema import ResponseMovie , CreateMovie ,UpdateMovie
+from app.schemas.movieschema import ResponseMovie  ,UpdateMovie,CreateMovie
+from app.schemas.genreschema import BaseGenre
 from app.database import get_db
 app = APIRouter(prefix='/movie' , tags=['Movie'])
 
+@app.get('/search' , response_model=list[ResponseMovie])
+def get_by_title(query:str = Query(... , min_length=1 ) , db:Session=Depends(get_db)):
+   movies = (
+        db.query(Movie)
+        .filter(Movie.title.ilike(f"%{query}%"))
+        .all()
+    )
+   return movies
+
+@app.get('/filter_by_genre',response_model=list[ResponseMovie])
+def get_by_genre(genre:str , db:Session=Depends(get_db)):
+   genre = db.query(Genre).filter(Genre.name == genre).first()
+   if genre is None:
+      raise HTTPException(
+         status_code=status.HTTP_404_NOT_FOUND,
+         detail='not found genre'
+      )
+   return genre.movies
+
+
 @app.post('/' , response_model=ResponseMovie , status_code=status.HTTP_201_CREATED)
-def create_movie(movie:CreateMovie , db:Session=Depends(get_db)):
+def create_movie(movie: CreateMovie , db:Session=Depends(get_db)):
    if db.query(Movie).filter(Movie.title == movie.title).first():
       raise HTTPException(
          status_code=status.HTTP_409_CONFLICT,
@@ -146,3 +167,4 @@ def delete_movie(movie_id ,  db:Session=Depends(get_db)):
           status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
           detail='Database has Error!!!'
        )
+
